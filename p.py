@@ -1,3 +1,4 @@
+import base64
 from typing import Tuple
 import json
 from pathlib import Path
@@ -49,6 +50,8 @@ app.layout = html.Div([
     html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')"})
 ])
 
+history_image = 'images/history.png'
+encoded_history_image = base64.b64encode(open(history_image,'rb').read())
 
 index_page = dbc.Container([
     html.Title("Australian Rainfall Prediction"),
@@ -62,7 +65,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('history.png'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Rainfall History", className="card-title"),
@@ -82,7 +85,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('location.jpg'), top=True,style={"height":"45%"}),
                     dbc.CardBody(
                         [
                             html.H4("Location", className="card-title"),
@@ -121,7 +124,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('network.png'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Predict Rainfall", className="card-title"),
@@ -141,7 +144,7 @@ index_page = dbc.Container([
         style={"position":"relative","left":"110px","margin-top": "20px"}
     ),
 ],
-style={"margin-top": 0}
+style={"margin-top": 0,"padding-top":"50px"}
 )
 
 
@@ -248,7 +251,7 @@ def get_layout_for_tab3():
                 dbc.Label("Select Chart"),
                 dcc.RadioItems(id="dropdown_chart_corr",value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
                                                                          {"label": "Pair Plot", "value": "pair"}],
-                               labelStyle={'display': 'inline-block'}),
+                               labelStyle={'display': 'inline-block','padding-right':'15px'}),
                 # dcc.Dropdown(id="dropdown_chart_corr", value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
                 #                                                          {"label": "Pair Plot", "value": "pair"}]),
                 dbc.Label("Select feature"),
