@@ -106,7 +106,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('visualization.jpg'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Rainfall Visualization", className="card-title"),
@@ -124,7 +124,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src=app.get_asset_url('network.png'), top=True),
+                    dbc.CardImg(src=app.get_asset_url('network.jpg'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Predict Rainfall", className="card-title"),
