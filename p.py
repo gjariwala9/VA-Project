@@ -97,8 +97,7 @@ index_page = dbc.Container([
                 style={"width": "18rem", "height": "23rem", "background-color": "#000000", "color": "#ffffff"},
             ),
         )
-    ],
-    ),
+    ],style={"position":"relative","left":"110px"}),
 
     dbc.Row([
         dbc.Col(
@@ -138,8 +137,8 @@ index_page = dbc.Container([
             ),
         ),
     ],
-        # justify="center",
-        style={"margin-top": "20px"}
+        # justify="center,
+        style={"position":"relative","left":"110px","margin-top": "20px"}
     ),
 ],
 style={"margin-top": 0}
