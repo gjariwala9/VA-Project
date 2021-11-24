@@ -29,31 +29,35 @@ app.config.suppress_callback_exceptions=True
 # Reading Dataset
 
 df = pd.read_csv('dataset/weatherAUS-processed.csv')
-aus_cities = json.load(open("dataset/australia-cities.geojson", "r"))
+# aus_cities = json.load(open("dataset/australia-cities.geojson", "r"))
 # aus_cities["name"] = aus_cities["properties"][""]
 # aus_cities_id_map = {}
-for feature in aus_cities["features"]:
-    feature["Location"] = feature["properties"]["name"]
+# for feature in aus_cities["features"]:
+#     feature["Location"] = feature["properties"]["name"]
 
 # print(aus_cities)
 
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-],
-style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')", "margin": "0", "padding": "0"}
-)
-
-
-index_page = dbc.Container([
-    html.Title("Australian Rainfall Prediction"),
     dbc.Row([
         html.H1(children='Australian Rainfall - Visualization Dashboard'),
     ],
         justify="center",
-        style={"margin-top": "0", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
+        style={"margin-top": "0", "margin-bottom": "1px", "color": "#ffffff", "background-color": "#000000"}
     ),
+    html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')"})
+])
+
+
+index_page = dbc.Container([
+    html.Title("Australian Rainfall Prediction"),
+    # dbc.Row([
+    #     html.H1(children='Australian Rainfall - Visualization Dashboard'),
+    # ],
+    #     justify="center",
+    #     style={"margin-top": "0", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
+    # ),
     dbc.Row([
         dbc.Col(
             dbc.Card(
@@ -169,16 +173,121 @@ def fetch_cities():
     for city in lst:
         cities.append({"label": city, "value": city})
     return cities
+def get_layout_for_tab1():
+    layout = html.Div([
+        dbc.Row([
+            html.H3(children='Demogrphic Visualization'),
+        ],
+            # justify="center",
+            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        ),
+        html.Div([
+            dbc.FormGroup([
+                dbc.Label("Select Year"),
+                dcc.Dropdown(id="dropdown_years_chart", value=1, options=fetch_years()),
+
+                dbc.Label("Select Chart"),
+                dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
+                                                                    {"label": "line Chart", "value": "line"},
+                                                                    {"label": "Bar-Line", "value": "bar-line"}]),
+                dbc.Label("Select feature"),
+                dcc.Dropdown(id="dropdown_feature_chart", value=3, options=fetch_numeric_columns()),
+                html.Br()
+            ]),
+            dbc.Button('Show Chart', id='button_chart', color='warning', style={'margin-bottom': '1em'},
+                       block=True),
+            dbc.Row([
+                dbc.Col(dcc.Graph(id='viz2')),
+            ]),
+        ])
+    ])
+    return layout
+
+def get_layout_for_tab2():
+    layout = html.Div([
+        dbc.Row([
+            html.H3(children='Trend'),
+        ],
+            # justify="center",
+            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        ),
+        html.Div([
+            dbc.FormGroup([
+                dbc.Label("Select city"),
+                dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
+
+                # dbc.Label("Select Chart"),
+                # dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
+                #                                                {"label": "line Chart", "value": "line"}]),
+                dbc.Label("Select feature"),
+                dcc.Dropdown(id="dropdown_feature_trend", value=2, options=fetch_numeric_columns()),
+                html.Br()
+            ]),
+            dbc.Button('Show Chart', id='button_trend', color='warning', style={'margin-bottom': '1em'},
+                       block=True),
+            dbc.Row([
+                dbc.Col(dcc.Graph(id='viz3')),
+            ]),
+        ])
+    ])
+
+    return layout
+
+def get_layout_for_tab3():
+    layout = html.Div([
+        dbc.Row([
+            html.H3(children='Correlation'),
+        ],
+            # justify="center",
+            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        ),
+        html.Div([
+            dbc.FormGroup([
+                # dbc.Label("Select city"),
+                # dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
+
+                dbc.Label("Select Chart"),
+                dcc.RadioItems(id="dropdown_chart_corr",value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
+                                                                         {"label": "Pair Plot", "value": "pair"}],
+                               labelStyle={'display': 'inline-block'}),
+                # dcc.Dropdown(id="dropdown_chart_corr", value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
+                #                                                          {"label": "Pair Plot", "value": "pair"}]),
+                dbc.Label("Select feature"),
+                dcc.Dropdown(id="dropdown_feature_corr", value=2, options=fetch_numeric_columns(), multi=True),
+                html.Br()
+            ]),
+            dbc.Button('Show Chart', id='button_corr', color='warning', style={'margin-bottom': '1em'},
+                       block=True),
+            dbc.Row([
+                dbc.Col(dcc.Graph(id='viz4')),
+            ]),
+        ])
+    ])
+
+    return layout
+page1 = dbc.Container([
+    dcc.Tabs([
+        dcc.Tab(label='Demographic Visualization', children=[
+            get_layout_for_tab1()
+        ]),
+        dcc.Tab(label='Trend Analysis', children=[
+            get_layout_for_tab2()
+        ]),
+        dcc.Tab(label='Feature Correlation', children=[
+            get_layout_for_tab3()
+        ])
+    ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'})
+],style={"background-color":"#ffffff"})
 
 
 # Setting Web Layout
-page1 = dbc.Container([
-    dbc.Row([
-        html.H1(children='Australian Rainfall - Visualization Dashboard'),
-    ],
-        justify="center",
-        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
-    ),
+page = dbc.Container([
+    # dbc.Row([
+    #     html.H1(children='Australian Rainfall - Visualization Dashboard'),
+    # ],
+    #     justify="center",
+    #     style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
+    # ),
     html.Div([
         dbc.FormGroup([
             dbc.Label("Select Year"),
@@ -192,7 +301,7 @@ page1 = dbc.Container([
         dbc.Row([
             dbc.Col(dcc.Graph(id='viz1')),
         ]),
-    ]),
+    ], style={"margin-top":"2px"}),
     dbc.Row([
             html.H3(children='Demogrphic Visualization'),
         ],
@@ -267,7 +376,7 @@ page1 = dbc.Container([
             ]),
         ]),
 
-])
+],style={"background-color":"#ffffff"})
 
 # Update the index
 @app.callback(dash.dependencies.Output('page-content', 'children'),
@@ -304,7 +413,7 @@ def update_vis1(n_clicks, year, feature):
 
         fig = px.choropleth(df_map, locations='Location',
                             color=feature,
-                            geojson=aus_cities,
+                            # geojson=aus_cities,
                             color_continuous_scale="Viridis",
                             range_color=(0, 12),
                             # scope="asia",
