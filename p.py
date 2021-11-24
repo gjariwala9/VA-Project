@@ -122,7 +122,8 @@ index_page = dbc.Container([
                                 "Did you know that we consider all the parameters to learn about past rainfall? Use these parameters as per your will to cluster similar rainfall!",
                                 className="card-text",
                             ),
-                            dbc.Button("Click to Visualize", color="warning"),
+                            dcc.Link(dbc.Button("Click to Visualize", color="warning"), href="/rainfall-visualization",
+                                     refresh=True),
                         ]
                     ),
                 ],
@@ -140,7 +141,8 @@ index_page = dbc.Container([
                                 "We provide you a ready made ML model and allow you to tweak thedemographics to predict future rainfall! The rainfall are visualized using a Gauge plot",
                                 className="card-text",
                             ),
-                            dbc.Button("Click to Visualize", color="warning"),
+                            dcc.Link(dbc.Button("Click to Predict", color="warning"), href="/rainfall-predict",
+                                     refresh=True),
                         ]
                     ),
                 ],
@@ -289,6 +291,31 @@ page1 = dbc.Container([
     ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'})
 ],style={"background-color":"#ffffff"})
 
+prediction_page = dbc.Container([
+    html.Div([
+        dbc.Row([
+            html.H3(children='Predict Rainfall: At your Destination'),
+        ],
+            # justify="center",
+            style={"margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        )
+    ])
+],style={"background-color": "#ffffff"})
+error_page = dbc.Container([
+    html.Div([
+        dbc.Row([
+            html.H3(children='Coming Soon!'),
+        ],
+            # justify="center",
+            style={"margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        )
+    ]),
+    html.Div([
+        dbc.Row([
+            html.H6(children='The page is under development phase. Please come back after some time.',style={"color":"red"}),
+        ])
+    ])
+],style={"height":"100vh"})
 page2 = dbc.Container([
     html.Div([
         dbc.Row([
@@ -454,6 +481,10 @@ def display_page(pathname):
         return page1
     elif pathname == '/location':
         return page2
+    elif pathname == '/rainfall-predict':
+        return error_page
+    elif pathname == '/rainfall-visualization':
+        return error_page
     else:
         return index_page
     # You could also return a 404 "URL not found" page here
