@@ -1,3 +1,4 @@
+import base64
 from typing import Tuple
 import json
 from pathlib import Path
@@ -51,6 +52,8 @@ app.layout = html.Div([
     html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')"})
 ])
 
+history_image = 'images/history.png'
+encoded_history_image = base64.b64encode(open(history_image,'rb').read())
 
 index_page = dbc.Container([
     html.Title("Australian Rainfall Prediction"),
@@ -64,7 +67,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('history.png'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Rainfall History", className="card-title"),
@@ -84,7 +87,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('location.jpg'), top=True,style={"height":"45%"}),
                     dbc.CardBody(
                         [
                             html.H4("Location", className="card-title"),
@@ -106,7 +109,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('visualization.jpg'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Rainfall Visualization", className="card-title"),
@@ -124,7 +127,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src="http://media.heartlandtv.com/images/rain+graphic.jpg", top=True),
+                    dbc.CardImg(src=app.get_asset_url('network.jpg'), top=True),
                     dbc.CardBody(
                         [
                             html.H4("Predict Rainfall", className="card-title"),
