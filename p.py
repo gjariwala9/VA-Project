@@ -44,12 +44,19 @@ df = pd.read_csv('dataset/weatherAUS-processed.csv')
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dbc.Row([
-        html.H1(children='Australian Rainfall - Visualization Dashboard'),
+        html.H1(children='Australian Rainfall - Visualization Dashboard',style={
+            "font-style":"italic",
+            "font-family":"Audrey",
+            # "background": 'url("https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg") no-repeat',
+            # "color": "white",
+            # "-webkit-background-clip": "text",
+            # "-webkit-text-fill-color": "transparent"
+        }),
     ],
         justify="center",
         style={"margin-top": "0", "margin-bottom": "1px", "color": "#ffffff", "background-color": "#000000"}
     ),
-    html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')"})
+    html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')","padding-top":"50px"})
 ])
 
 
@@ -319,13 +326,25 @@ page2 = dbc.Container([
         ),
         dbc.Button('Show Visualization', id='button_location', color='warning', style={'margin-bottom': '1em'},
                    block=True),
-        dbc.Row([
-            dbc.Col(dcc.Graph(id='viz_location')),
-        ]),
-        dbc.Row([
-            dbc.Col(dcc.Graph(id='viz_directions')),
-        ]),
-    ], style={"padding-top": '20px' }),
+        dcc.Tabs([
+            dcc.Tab(label='Rainfall Trends', children=[
+                dbc.Row([
+                    dbc.Col(dcc.Graph(id='viz_location')),
+                ])
+            ]),
+            dcc.Tab(label='Rainfall Distribution', children=[
+                dbc.Row([
+                    dbc.Col(dcc.Graph(id='viz_directions')),
+                ])
+            ])
+        ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'}),
+        # dbc.Row([
+        #     dbc.Col(dcc.Graph(id='viz_location')),
+        # ]),
+        # dbc.Row([
+        #     dbc.Col(dcc.Graph(id='viz_directions')),
+        # ]),
+    ]),
 
 ], style={"background-color": "#ffffff"})
 
