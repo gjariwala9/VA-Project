@@ -52,8 +52,6 @@ app.layout = html.Div([
     html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')"})
 ])
 
-history_image = 'images/history.png'
-encoded_history_image = base64.b64encode(open(history_image,'rb').read())
 
 index_page = dbc.Container([
     html.Title("Australian Rainfall Prediction"),
@@ -564,13 +562,16 @@ def update_vis5(n_clicks, city, feature, year_range):
         df_location = df[df['Location'].isin(city)]
         years = []
         for i in range(year_range[0], year_range[1]+1):
-            print(i)
+            # print(i)
             years.append(i)
+        # print((years))
         df_location = df_location[df_location['year'].isin(years)]
+
         df_location['year'] = df_location['year'].apply(str)
         df_location['year'] = df_location['year'].str[:-2]
 
         df_location = df_location.groupby(['Location', 'year'], as_index=False)[feature].mean()
+        df_location = df_location.sort_values('year')
         fig = px.line(df_location, x="year", y=feature, color='Location')
 
         return fig
@@ -589,10 +590,10 @@ def update_vis6(n_clicks, cities, feature, year_range):
     if n_clicks:
         fig = None
         df_location = df[df['Location'].isin(cities)]
-        print(year_range)
+        # print(year_range)
         years = []
         for i in range(year_range[0], year_range[1]+1):
-            print(i)
+            # print(i)
             years.append(i)
         df_location = df_location[df_location['year'].isin(years)]
         df_location['year'] = df_location['year'].apply(str)
@@ -602,8 +603,8 @@ def update_vis6(n_clicks, cities, feature, year_range):
         specs = []
         for i in range(0,cities_iter):
             specs.append([{'type':'domain'}, {'type':'domain'}])
-        print("Specifications")
-        print(specs)
+        # print("Specifications")
+        # print(specs)
         # specs=[[{'type':'domain'}, {'type':'domain'}], [{'type':'domain'}, {'type':'domain'}]]
         # df_location = df_location.groupby(['Location', 'year'], as_index=False)[feature].mean()
         fig = make_subplots(rows=cities_iter, cols=2, specs=specs)
