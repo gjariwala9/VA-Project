@@ -44,14 +44,9 @@ df = pd.read_csv('dataset/weatherAUS-processed.csv')
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dbc.Row([
-        html.H1(children='Australian Rainfall - Visualization Dashboard',style={
+        html.A(html.H1(children='Australian Rainfall - Visualization Dashboard',style={
             "font-style":"italic",
-            "font-family":"Audrey",
-            # "background": 'url("https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg") no-repeat',
-            # "color": "white",
-            # "-webkit-background-clip": "text",
-            # "-webkit-text-fill-color": "transparent"
-        }),
+            "font-family":"Audrey"}),href="/",style={'text-dacoration':'none','color':'yellow'}),
     ],
         justify="center",
         style={"margin-top": "0", "margin-bottom": "1px", "color": "#ffffff", "background-color": "#000000"}
@@ -301,6 +296,78 @@ prediction_page = dbc.Container([
         )
     ])
 ],style={"background-color": "#ffffff"})
+
+page3 = dbc.Container([
+    dbc.Row([
+        html.H3(children='Rainfall Visualization'),
+    ],
+        # justify="center",
+        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+    ),
+    html.Div([
+        dbc.FormGroup([
+            # dbc.Label("Select X-axis Label"),
+            # dcc.Dropdown(id="dropdown_x_feature_cluster", value=1, options=fetch_numeric_columns()),
+            #
+            # dbc.Label("Select Y-axis Label"),
+            # dcc.Dropdown(id="dropdown_y_feature_cluster", value=2, options=fetch_numeric_columns()),
+            #
+            # dcc.Slider(
+            #     id='slider_cluster',
+            #     min=2,
+            #     max=10,
+            #     step=None,
+            #     marks={
+            #         2: '2',
+            #         3: '3',
+            #         4: '4',
+            #         5: '5',
+            #         6: '6',
+            #         7: '7',
+            #         8: '8',
+            #         9: '9',
+            #         10: '10',
+            #     },
+            #     value=2
+            # ),
+
+            dbc.Label("Select Cities"),
+            dcc.Dropdown(id="dropdown_cities_3", value=1, options=fetch_cities(), multi=True),
+
+            dbc.Label("Select feature"),
+            dcc.Dropdown(id="dropdown_feature_3", value=2, options=fetch_numeric_columns()),
+
+
+            html.Br()
+        ]),
+        dbc.Button('Show Visualization', id='button_3', color='warning', style={'margin-bottom': '1em'},
+                   block=True),
+        dbc.Row([
+            dbc.Col(dcc.Graph(id='viz_slider_autoplay')),
+        ]),
+        dcc.Slider(
+            id = "auto_slider",
+            min=2007,
+            max=2017,
+            step=None,
+            marks={
+                2007: '2007',
+                2008: '2008',
+                2009: '2009',
+                2010: '2010',
+                2011: '2011',
+                2012: '2012',
+                2013: '2013',
+                2014: '2014',
+                2015: '2015',
+                2016: '2016',
+                2017: '2017'
+            },
+            value=2012
+        )
+    ]),
+],style={"background-color": "#ffffff"})
+
 error_page = dbc.Container([
     html.Div([
         dbc.Row([
@@ -484,7 +551,7 @@ def display_page(pathname):
     elif pathname == '/rainfall-predict':
         return error_page
     elif pathname == '/rainfall-visualization':
-        return error_page
+        return page3
     else:
         return index_page
     # You could also return a 404 "URL not found" page here
@@ -524,6 +591,32 @@ def update_vis1(n_clicks, year, feature):
         return fig
 
     return {}
+
+
+@app.callback(
+    dash.dependencies.Output('viz_slider_autoplay', 'figure'),
+    [Input('button_3', 'n_clicks'), Input('auto_slider', 'value')],
+    [State('dropdown_cities_3', 'value'),
+     State('dropdown_feature_3', 'value'),
+     ]
+)
+def update_vis_3_1(n_clicks, year,cities, feature):
+    if n_clicks:
+        fig = None
+
+        df_autoplay = df[df['Location'].isin(cities)]
+        df_autoplay = df_autoplay[df_autoplay['year'] == year]
+        df_autoplay = df_autoplay.groupby(['Location', 'RainTomorrow'], as_index=False)[feature].mean()
+
+        fig = px.bar(df_autoplay, x='Location', y=feature, color='RainTomorrow' , barmode="group")
+
+        return fig
+
+    return {}
+
+
+
+
 
 @app.callback(
     dash.dependencies.Output('viz2', 'figure'),
