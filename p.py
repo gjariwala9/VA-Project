@@ -32,6 +32,9 @@ app.config.suppress_callback_exceptions=True
 # Reading Dataset
 
 df = pd.read_csv('dataset/weatherAUS-processed.csv')
+aus_cities = pd.read_csv('dataset/au_cities.csv')
+df = pd.merge(df, aus_cities,on='Location', how='left')
+
 # aus_cities = json.load(open("dataset/australia-cities.geojson", "r"))
 # aus_cities["name"] = aus_cities["properties"][""]
 # aus_cities_id_map = {}
@@ -391,47 +394,82 @@ page2 = dbc.Container([
             # justify="center",
             style={"margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
         ),
-        dbc.FormGroup([
-            dbc.Label("Select Cities"),
-            dcc.Dropdown(id="dropdown_city_location", value=1, options=fetch_cities(), multi=True),
-            dbc.Label("Select feature"),
-            dcc.Dropdown(id="dropdown_feature_location", value=2, options=fetch_numeric_columns()),
-            html.Br()
-        ]),
-        dcc.RangeSlider(
-            id='range_slider_year',
-            min=2007,
-            max=2017,
-            step=None,
-            marks={
-                2007: '2007',
-                2008: '2008',
-                2009: '2009',
-                2010: '2010',
-                2011: '2011',
-                2012: '2012',
-                2013: '2013',
-                2014: '2014',
-                2015: '2015',
-                2016: '2016',
-                2017: '2017'
-            },
-            value=[2007, 2017]
-        ),
-        dbc.Button('Show Visualization', id='button_location', color='warning', style={'margin-bottom': '1em'},
-                   block=True),
-        dcc.Tabs([
-            dcc.Tab(label='Rainfall Trends', children=[
-                dbc.Row([
-                    dbc.Col(dcc.Graph(id='viz_location')),
-                ])
-            ]),
-            dcc.Tab(label='Rainfall Distribution', children=[
-                dbc.Row([
-                    dbc.Col(dcc.Graph(id='viz_directions')),
-                ])
+        dbc.Tabs([
+           dbc.Tab(label='Custom Visualization',children=[
+               dbc.FormGroup([
+                   dbc.Label("Select Cities"),
+                   dcc.Dropdown(id="dropdown_city_location", value=1, options=fetch_cities(), multi=True),
+                   dbc.Label("Select feature"),
+                   dcc.Dropdown(id="dropdown_feature_location", value=2, options=fetch_numeric_columns()),
+                   html.Br()
+               ]),
+               dcc.RangeSlider(
+                   id='range_slider_year',
+                   min=2007,
+                   max=2017,
+                   step=None,
+                   marks={
+                       2007: '2007',
+                       2008: '2008',
+                       2009: '2009',
+                       2010: '2010',
+                       2011: '2011',
+                       2012: '2012',
+                       2013: '2013',
+                       2014: '2014',
+                       2015: '2015',
+                       2016: '2016',
+                       2017: '2017'
+                   },
+                   value=[2007, 2017]
+               ),
+               dbc.Button('Show Visualization', id='button_location', color='warning', style={'margin-bottom': '1em'},
+                          block=True),
+               dcc.Tabs([
+                   dcc.Tab(label='Rainfall Trends', children=[
+                       dbc.Row([
+                           dbc.Col(dcc.Graph(id='viz_location')),
+                       ])
+                   ]),
+                   dcc.Tab(label='Rainfall Distribution', children=[
+                       dbc.Row([
+                           dbc.Col(dcc.Graph(id='viz_directions')),
+                       ])
+                   ])
+               ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'})
+           ]),
+            dbc.Tab(label='Holistic View',children=[
+                dbc.FormGroup([
+                    dbc.Label("Select feature"),
+                    dcc.Dropdown(id="ddn_feature_ch", value=2, options=fetch_numeric_columns()),
+                    html.Br()
+                ]),
+                dcc.RangeSlider(
+                    id='year_slider_ch',
+                    min=2007,
+                    max=2017,
+                    step=None,
+                    marks={
+                        2007: '2007',
+                        2008: '2008',
+                        2009: '2009',
+                        2010: '2010',
+                        2011: '2011',
+                        2012: '2012',
+                        2013: '2013',
+                        2014: '2014',
+                        2015: '2015',
+                        2016: '2016',
+                        2017: '2017'
+                    },
+                    value=[2007, 2017]
+                ),
+                dbc.Button('Show Visualization', id='button_ch', color='warning', style={'margin-bottom': '1em'},
+                           block=True),
+                html.Br(),
+                dbc.Col(dcc.Graph(id='viz_choropleth')),
             ])
-        ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'}),
+        ]),
         # dbc.Row([
         #     dbc.Col(dcc.Graph(id='viz_location')),
         # ]),
@@ -559,35 +597,41 @@ def display_page(pathname):
 
 
 @app.callback(
-    dash.dependencies.Output('viz1', 'figure'),
-    [Input('button_map', 'n_clicks')],
-    [State('dropdown_years', 'value'),
-     State('dropdown_feature', 'value'),
+    dash.dependencies.Output('viz_choropleth', 'figure'),
+    [Input('button_ch', 'n_clicks')],
+    [State('year_slider_ch', 'value'),
+     State('ddn_feature_ch', 'value'),
      ]
 )
 def update_vis1(n_clicks, year, feature):
     if n_clicks:
+        df_map = df[df['year'].isin(year)]
         fig = None
-        df_map = df.loc[df['year'] == year]
+        # print(df_map)
         df_map = df_map.groupby('Location', as_index=False)[feature].mean()
+        df_map = pd.merge(df_map, aus_cities,on='Location', how='left')
+        # print(df_map)
 
-        # Creating Map
-        # fig = px.choropleth(df, locations="Location", locationmode="country names", color="value",
-        #                     hover_name="Location", color_continuous_scale=px.colors.sequential.Plasma)
-
-        print(df_map)
-
-        fig = px.choropleth(df_map, locations='Location',
-                            color=feature,
-                            # geojson=aus_cities,
-                            color_continuous_scale="Viridis",
-                            range_color=(0, 12),
-                            # scope="asia",
-                            labels={'feature': feature},
-                            hover_data = ['MaxTemp'],
-                            )
-
-        fig.update_geos(fitbounds="locations", visible=True)
+        fig = px.scatter_geo(df_map,
+                             # locations="Location",
+                             lat=df_map.lat,
+                             lon=df_map.lng,
+                             projection="natural earth",
+                             locationmode="country names",
+                             size=df_map[feature],
+                             hover_data={'lat':False,'lng':False},
+                             color=df_map.Location
+                             )
+        fig.update_layout(
+            title='Rainfall in Australia',
+            # geo_scope='world',
+            geo=dict(
+                projection_scale=0.15,  # this is kind of like zoom
+                center=dict(lat=-25, lon=135),  # this will center on the point
+                lataxis=dict(range=[-28,-22]),
+                lonaxis = dict(range=[130,140])
+            )
+        )
         return fig
 
     return {}
