@@ -1,34 +1,24 @@
 import base64
-from typing import Tuple
-import json
-from pathlib import Path
-from plotly.subplots import make_subplots
 import dash
+import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+import dash_html_components as html
+import joblib
+import json
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
-from dash.dependencies import Output, Input, State
-from matplotlib.widgets import Button, Slider
-import dash_core_components as dcc
-# from dash import dcc
-import dash_html_components as html
-# from dash import html
-import dash_bootstrap_components as dbc
-# from dash import dbc
-from project import *
-
-# import datetime
-# import sqlite3
-# import webbrowser
-# from time import sleep
-
-from flask import Response
 import pickle
-import joblib
-# from xgboost import XGBClassifier
+import plotly.express as px
+import plotly.graph_objects as go
+from dash.dependencies import Output, Input, State
+from flask import Response
+from matplotlib.widgets import Button, Slider
+from pathlib import Path
+from plotly.subplots import make_subplots
+from custom_function import *
+from typing import Tuple
 
 model = joblib.load('finalModel.joblib')
 scaler = pickle.load(open('scaler.pkl', 'rb'))
@@ -36,46 +26,30 @@ le = pickle.load(open('labelEncoder.pkl', 'rb'))
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Rainfall Prediction in Australia"
-app.config.suppress_callback_exceptions=True
-# server = app.server
-
-# Reading Dataset
+app.config.suppress_callback_exceptions = True
 
 df = pd.read_csv('dataset/weatherAUS-processed.csv')
 aus_cities = pd.read_csv('dataset/au_cities.csv')
-df = pd.merge(df, aus_cities,on='Location', how='left')
-
-# aus_cities = json.load(open("dataset/australia-cities.geojson", "r"))
-# aus_cities["name"] = aus_cities["properties"][""]
-# aus_cities_id_map = {}
-# for feature in aus_cities["features"]:
-#     feature["Location"] = feature["properties"]["name"]
-
-# print(aus_cities)
+df = pd.merge(df, aus_cities, on='Location', how='left')
 
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dbc.Row([
-        html.A(html.H1(children='Australian Rainfall - Visualization Dashboard',style={
-            "font-style":"italic",
-            "font-family":"Audrey"}),href="/",style={'text-dacoration':'none','color':'yellow'}),
+        html.A(html.H1(children='Australian Rainfall - Visualization Dashboard', style={
+            "font-style": "italic",
+            "font-family": "Audrey"}), href="/", style={'text-dacoration': 'none', 'color': 'yellow'}),
     ],
         justify="center",
         style={"margin-top": "0", "margin-bottom": "1px", "color": "#ffffff", "background-color": "#000000"}
     ),
-    html.Div(id='page-content',style={"background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')","padding-top":"50px"})
+    html.Div(id='page-content', style={
+        "background-image": "url('https://www.basicplanet.com/wp-content/uploads/2017/01/Countries-with-Most-Rainfall-in-the-World.jpg')",
+        "padding-top": "50px"})
 ])
-
 
 index_page = dbc.Container([
     html.Title("Australian Rainfall Prediction"),
-    # dbc.Row([
-    #     html.H1(children='Australian Rainfall - Visualization Dashboard'),
-    # ],
-    #     justify="center",
-    #     style={"margin-top": "0", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
-    # ),
     dbc.Row([
         dbc.Col(
             dbc.Card(
@@ -100,7 +74,7 @@ index_page = dbc.Container([
         dbc.Col(
             dbc.Card(
                 [
-                    dbc.CardImg(src=app.get_asset_url('location.jpg'), top=True,style={"height":"45%"}),
+                    dbc.CardImg(src=app.get_asset_url('location.jpg'), top=True, style={"height": "45%"}),
                     dbc.CardBody(
                         [
                             html.H4("Location", className="card-title"),
@@ -116,7 +90,7 @@ index_page = dbc.Container([
                 style={"width": "18rem", "height": "23rem", "background-color": "#000000", "color": "#ffffff"},
             ),
         )
-    ],style={"position":"relative","left":"110px"}),
+    ], style={"position": "relative", "left": "110px"}),
 
     dbc.Row([
         dbc.Col(
@@ -159,10 +133,10 @@ index_page = dbc.Container([
         ),
     ],
         # justify="center,
-        style={"position":"relative","left":"110px","margin-top": "20px"}
+        style={"position": "relative", "left": "110px", "margin-top": "20px"}
     ),
 ],
-style={"margin-top": 0,"padding-top":"50px"}
+    style={"margin-top": 0, "padding-top": "50px"}
 )
 
 
@@ -185,6 +159,7 @@ def fetch_numeric_columns():
         num_cols.append({"label": col, "value": col})
     return num_cols
 
+
 def fetch_directions():
     lst = df['WindDir9am'].unique()
     lst = lst.tolist()
@@ -193,6 +168,7 @@ def fetch_directions():
     for direction in lst:
         directions.append({"label": direction, "value": direction})
     return directions
+
 
 def fetch_cities():
     lst = df['Location'].unique()
@@ -204,14 +180,13 @@ def fetch_cities():
     return cities
 
 
-
 def get_layout_for_tab1():
     layout = html.Div([
         dbc.Row([
             html.H3(children='Demogrphic Visualization'),
         ],
-            # justify="center",
-            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+                   "padding-left": "1%"}
         ),
         html.Div([
             dbc.FormGroup([
@@ -235,22 +210,19 @@ def get_layout_for_tab1():
     ])
     return layout
 
+
 def get_layout_for_tab2():
     layout = html.Div([
         dbc.Row([
             html.H3(children='Trend'),
         ],
-            # justify="center",
-            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+                   "padding-left": "1%"}
         ),
         html.Div([
             dbc.FormGroup([
                 dbc.Label("Select city"),
                 dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
-
-                # dbc.Label("Select Chart"),
-                # dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
-                #                                                {"label": "line Chart", "value": "line"}]),
                 dbc.Label("Select feature"),
                 dcc.Dropdown(id="dropdown_feature_trend", value=2, options=fetch_numeric_columns()),
                 html.Br()
@@ -265,24 +237,23 @@ def get_layout_for_tab2():
 
     return layout
 
+
 def get_layout_for_tab3():
     layout = html.Div([
         dbc.Row([
             html.H3(children='Correlation'),
         ],
-            # justify="center",
-            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+                   "padding-left": "1%"}
         ),
         html.Div([
             dbc.FormGroup([
-                # dbc.Label("Select city"),
-                # dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
 
                 dbc.Label("Select Chart"),
-                dcc.RadioItems(id="dropdown_chart_corr",value='pair', options=[
-                                                                         {"label": "Pair Plot", "value": "pair"},
-                    {"label": "Heat-Map", "value": "heat-map"},],
-                               labelStyle={'display': 'inline-block','padding-right':'15px'}),
+                dcc.RadioItems(id="dropdown_chart_corr", value='pair', options=[
+                    {"label": "Pair Plot", "value": "pair"},
+                    {"label": "Heat-Map", "value": "heat-map"}, ],
+                               labelStyle={'display': 'inline-block', 'padding-right': '15px'}),
                 dbc.Label("Select feature"),
                 dcc.Dropdown(id="dropdown_feature_corr", value=2, options=fetch_numeric_columns(), multi=True),
                 html.Br()
@@ -296,6 +267,8 @@ def get_layout_for_tab3():
     ])
 
     return layout
+
+
 page1 = dbc.Container([
     dcc.Tabs([
         dcc.Tab(label='Demographic Visualization', children=[
@@ -307,60 +280,23 @@ page1 = dbc.Container([
         dcc.Tab(label='Feature Correlation', children=[
             get_layout_for_tab3()
         ])
-    ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'})
-],style={"background-color":"#ffffff"})
-
-prediction_page = dbc.Container([
-    html.Div([
-        dbc.Row([
-            html.H3(children='Predict Rainfall: At your Destination'),
-        ],
-            # justify="center",
-            style={"margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
-        )
-    ])
-],style={"background-color": "#ffffff"})
+    ], style={'font-style': 'italic', 'color': 'red', 'background-color': 'black'})
+], style={"background-color": "#ffffff"})
 
 page3 = dbc.Container([
     dbc.Row([
         html.H3(children='Rainfall Visualization'),
     ],
-        # justify="center",
-        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+               "padding-left": "1%"}
     ),
     html.Div([
         dbc.FormGroup([
-            # dbc.Label("Select X-axis Label"),
-            # dcc.Dropdown(id="dropdown_x_feature_cluster", value=1, options=fetch_numeric_columns()),
-            #
-            # dbc.Label("Select Y-axis Label"),
-            # dcc.Dropdown(id="dropdown_y_feature_cluster", value=2, options=fetch_numeric_columns()),
-            #
-            # dcc.Slider(
-            #     id='slider_cluster',
-            #     min=2,
-            #     max=10,
-            #     step=None,
-            #     marks={
-            #         2: '2',
-            #         3: '3',
-            #         4: '4',
-            #         5: '5',
-            #         6: '6',
-            #         7: '7',
-            #         8: '8',
-            #         9: '9',
-            #         10: '10',
-            #     },
-            #     value=2
-            # ),
-
             dbc.Label("Select Cities"),
             dcc.Dropdown(id="dropdown_cities_3", value=1, options=fetch_cities(), multi=True),
 
             dbc.Label("Select feature"),
             dcc.Dropdown(id="dropdown_feature_3", value=2, options=fetch_numeric_columns()),
-
 
             html.Br()
         ]),
@@ -370,7 +306,7 @@ page3 = dbc.Container([
             dbc.Col(dcc.Graph(id='viz_slider_autoplay')),
         ]),
         dcc.Slider(
-            id = "auto_slider",
+            id="auto_slider",
             min=2007,
             max=2017,
             step=None,
@@ -390,16 +326,14 @@ page3 = dbc.Container([
             value=2012
         )
     ]),
-],style={"background-color": "#ffffff"})
-
-rainTomorrowPrediction = ""
+], style={"background-color": "#ffffff"})
 
 page4 = dbc.Container([
     dbc.Row([
         html.H3(children='Rainfall Prediction'),
     ],
-        # justify="center",
-        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+               "padding-left": "1%"}
     ),
     html.Div([
         dbc.FormGroup([
@@ -410,22 +344,22 @@ page4 = dbc.Container([
             dbc.Input(id="minTemp", type="number", min=-50, max=50, step=0.1, value=17.9),
 
             dbc.Label("Enter Maximum Temperature"),
-            dbc.Input(id="maxTemp",type="number", min=-50, max=50, step=0.1, value=35.2),
+            dbc.Input(id="maxTemp", type="number", min=-50, max=50, step=0.1, value=35.2),
 
             dbc.Label("Enter Rainfall in cm"),
-            dbc.Input(id="rain",type="number", min=0, max=100, step=0.1, value=0.0),
+            dbc.Input(id="rain", type="number", min=0, max=100, step=0.1, value=0.0),
 
             dbc.Label("Enter Evaporation"),
-            dbc.Input(id="evaporation",type="number", min=0, max=100, step=0.1, value=12.0),
+            dbc.Input(id="evaporation", type="number", min=0, max=100, step=0.1, value=12.0),
 
             dbc.Label("Enter Sunshine"),
-            dbc.Input(id="sunshine",type="number", min=0, max=100, step=0.1, value=12.3),
+            dbc.Input(id="sunshine", type="number", min=0, max=100, step=0.1, value=12.3),
 
             dbc.Label("Select Wind Gust Direction"),
             dcc.Dropdown(id="windGustDir", value='SSW', options=fetch_directions()),
 
             dbc.Label("Enter WindGustSpeed"),
-            dbc.Input(id="windGustSpeed",type="number", min=0, max=100, step=0.1, value=48.0),
+            dbc.Input(id="windGustSpeed", type="number", min=0, max=100, step=0.1, value=48.0),
 
             dbc.Label("Select Wind Direction at 9AM"),
             dcc.Dropdown(id="windDir9am", value='ENE', options=fetch_directions()),
@@ -434,39 +368,38 @@ page4 = dbc.Container([
             dcc.Dropdown(id="windDir3pm", value='SW', options=fetch_directions()),
 
             dbc.Label("Enter Wind Speed at 9AM"),
-            dbc.Input(id="windSpeed9am",type="number", min=0, max=100, step=0.1, value=6.0),
+            dbc.Input(id="windSpeed9am", type="number", min=0, max=100, step=0.1, value=6.0),
 
             dbc.Label("Enter Wind Speed at 3PM"),
-            dbc.Input(id="windSpeed3pm",type="number", min=0, max=100, step=0.1, value=20.0),
+            dbc.Input(id="windSpeed3pm", type="number", min=0, max=100, step=0.1, value=20.0),
 
             dbc.Label("Enter Humidity at 9AM"),
-            dbc.Input(id="humidity9am",type="number", min=0, max=100, step=0.1, value=20.0),
+            dbc.Input(id="humidity9am", type="number", min=0, max=100, step=0.1, value=20.0),
 
             dbc.Label("Enter Humidity at 3PM"),
-            dbc.Input(id="humidity3pm",type="number", min=0, max=100, step=0.1, value=13.0),
+            dbc.Input(id="humidity3pm", type="number", min=0, max=100, step=0.1, value=13.0),
 
             dbc.Label("Enter Pressure at 9AM"),
             dbc.Input(id="pressure9am", type="number", min=0, max=10000, step=0.1, value=1006.3),
 
             dbc.Label("Enter Pressure at 3PM"),
-            dbc.Input(id="pressure3pm",type="number", min=0, max=10000, step=0.1, value=1004.4),
+            dbc.Input(id="pressure3pm", type="number", min=0, max=10000, step=0.1, value=1004.4),
 
             dbc.Label("Enter Cloud at 9AM"),
-            dbc.Input(id="cloud9am",type="number", min=0, max=100, step=0.1, value=2.0),
+            dbc.Input(id="cloud9am", type="number", min=0, max=100, step=0.1, value=2.0),
 
             dbc.Label("Enter CLoud at 3PM"),
-            dbc.Input(id="cloud3pm",type="number", min=0, max=100, step=0.1, value=5.0),
+            dbc.Input(id="cloud3pm", type="number", min=0, max=100, step=0.1, value=5.0),
 
             dbc.Label("Enter Temperature at 9AM"),
-            dbc.Input(id="temp9am",type="number", min=0, max=100, step=0.1, value=26.6),
+            dbc.Input(id="temp9am", type="number", min=0, max=100, step=0.1, value=26.6),
 
             dbc.Label("Enter Temperature at 3PM"),
-            dbc.Input(id="temp3pm",type="number", min=0, max=100, step=0.1, value=33.4),
+            dbc.Input(id="temp3pm", type="number", min=0, max=100, step=0.1, value=33.4),
 
             dbc.Label("Did it rain today?"),
             dcc.Dropdown(id="rainToday", value='No', options=[{'label': 'Yes', 'value': 'Yes'},
-                                                           {'label': 'No', 'value': 'No'}]),
-
+                                                              {'label': 'No', 'value': 'No'}]),
 
             html.Br()
         ]),
@@ -475,7 +408,7 @@ page4 = dbc.Container([
 
         html.Div(id='prediction'),
     ]),
-],style={"background-color": "#ffffff"})
+], style={"background-color": "#ffffff"})
 
 error_page = dbc.Container([
     html.Div([
@@ -488,10 +421,11 @@ error_page = dbc.Container([
     ]),
     html.Div([
         dbc.Row([
-            html.H6(children='The page is under development phase. Please come back after some time.',style={"color":"red"}),
+            html.H6(children='The page is under development phase. Please come back after some time.',
+                    style={"color": "red"}),
         ])
     ])
-],style={"height":"100vh"})
+], style={"height": "100vh"})
 
 page2 = dbc.Container([
     html.Div([
@@ -502,50 +436,50 @@ page2 = dbc.Container([
             style={"margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
         ),
         dbc.Tabs([
-           dbc.Tab(label='Custom Visualization',children=[
-               dbc.FormGroup([
-                   dbc.Label("Select Cities"),
-                   dcc.Dropdown(id="dropdown_city_location", value=1, options=fetch_cities(), multi=True),
-                   dbc.Label("Select feature"),
-                   dcc.Dropdown(id="dropdown_feature_location", value=2, options=fetch_numeric_columns()),
-                   html.Br()
-               ]),
-               dcc.RangeSlider(
-                   id='range_slider_year',
-                   min=2007,
-                   max=2017,
-                   step=None,
-                   marks={
-                       2007: '2007',
-                       2008: '2008',
-                       2009: '2009',
-                       2010: '2010',
-                       2011: '2011',
-                       2012: '2012',
-                       2013: '2013',
-                       2014: '2014',
-                       2015: '2015',
-                       2016: '2016',
-                       2017: '2017'
-                   },
-                   value=[2007, 2017]
-               ),
-               dbc.Button('Show Visualization', id='button_location', color='warning', style={'margin-bottom': '1em'},
-                          block=True),
-               dcc.Tabs([
-                   dcc.Tab(label='Rainfall Trends', children=[
-                       dbc.Row([
-                           dbc.Col(dcc.Graph(id='viz_location')),
-                       ])
-                   ]),
-                   dcc.Tab(label='Rainfall Distribution', children=[
-                       dbc.Row([
-                           dbc.Col(dcc.Graph(id='viz_directions')),
-                       ])
-                   ])
-               ], style={'font-style': 'italic', 'color':'red', 'background-color':'black'})
-           ]),
-            dbc.Tab(label='Holistic View',children=[
+            dbc.Tab(label='Custom Visualization', children=[
+                dbc.FormGroup([
+                    dbc.Label("Select Cities"),
+                    dcc.Dropdown(id="dropdown_city_location", value=1, options=fetch_cities(), multi=True),
+                    dbc.Label("Select feature"),
+                    dcc.Dropdown(id="dropdown_feature_location", value=2, options=fetch_numeric_columns()),
+                    html.Br()
+                ]),
+                dcc.RangeSlider(
+                    id='range_slider_year',
+                    min=2007,
+                    max=2017,
+                    step=None,
+                    marks={
+                        2007: '2007',
+                        2008: '2008',
+                        2009: '2009',
+                        2010: '2010',
+                        2011: '2011',
+                        2012: '2012',
+                        2013: '2013',
+                        2014: '2014',
+                        2015: '2015',
+                        2016: '2016',
+                        2017: '2017'
+                    },
+                    value=[2007, 2017]
+                ),
+                dbc.Button('Show Visualization', id='button_location', color='warning', style={'margin-bottom': '1em'},
+                           block=True),
+                dcc.Tabs([
+                    dcc.Tab(label='Rainfall Trends', children=[
+                        dbc.Row([
+                            dbc.Col(dcc.Graph(id='viz_location')),
+                        ])
+                    ]),
+                    dcc.Tab(label='Rainfall Distribution', children=[
+                        dbc.Row([
+                            dbc.Col(dcc.Graph(id='viz_directions')),
+                        ])
+                    ])
+                ], style={'font-style': 'italic', 'color': 'red', 'background-color': 'black'})
+            ]),
+            dbc.Tab(label='Holistic View', children=[
                 dbc.FormGroup([
                     dbc.Label("Select feature"),
                     dcc.Dropdown(id="ddn_feature_ch", value=2, options=fetch_numeric_columns()),
@@ -586,104 +520,108 @@ page2 = dbc.Container([
     ]),
 
 ], style={"background-color": "#ffffff"})
+#
+# # Setting Web Layout
+# page = dbc.Container([
+#     # dbc.Row([
+#     #     html.H1(children='Australian Rainfall - Visualization Dashboard'),
+#     # ],
+#     #     justify="center",
+#     #     style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
+#     # ),
+#     html.Div([
+#         dbc.FormGroup([
+#             dbc.Label("Select Year"),
+#             dcc.Dropdown(id="dropdown_years", value=1, options=fetch_years()),
+#             dbc.Label("Select feature"),
+#             dcc.Dropdown(id="dropdown_feature", value=2, options=fetch_numeric_columns()),
+#             html.Br()
+#         ]),
+#         dbc.Button('Show Map', id='button_map', color='success', style={'margin-bottom': '1em'},
+#                    block=True),
+#         dbc.Row([
+#             dbc.Col(dcc.Graph(id='viz1')),
+#         ]),
+#     ], style={"margin-top": "2px"}),
+#     dbc.Row([
+#         html.H3(children='Demogrphic Visualization'),
+#     ],
+#         # justify="center",
+#         style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+#                "padding-left": "1%"}
+#     ),
+#     html.Div([
+#         dbc.FormGroup([
+#             dbc.Label("Select Year"),
+#             dcc.Dropdown(id="dropdown_years_chart", value=1, options=fetch_years()),
+#
+#             dbc.Label("Select Chart"),
+#             dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
+#                                                                 {"label": "line Chart", "value": "line"},
+#                                                                 {"label": "Bar-Line", "value": "bar-line"}]),
+#             dbc.Label("Select feature"),
+#             dcc.Dropdown(id="dropdown_feature_chart", value=3, options=fetch_numeric_columns()),
+#             html.Br()
+#         ]),
+#         dbc.Button('Show Chart', id='button_chart', color='warning', style={'margin-bottom': '1em'},
+#                    block=True),
+#         dbc.Row([
+#             dbc.Col(dcc.Graph(id='viz2')),
+#         ]),
+#     ]),
+#     dbc.Row([
+#         html.H3(children='Trend'),
+#     ],
+#         # justify="center",
+#         style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+#                "padding-left": "1%"}
+#     ),
+#     html.Div([
+#         dbc.FormGroup([
+#             dbc.Label("Select city"),
+#             dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
+#
+#             # dbc.Label("Select Chart"),
+#             # dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
+#             #                                                {"label": "line Chart", "value": "line"}]),
+#             dbc.Label("Select feature"),
+#             dcc.Dropdown(id="dropdown_feature_trend", value=2, options=fetch_numeric_columns()),
+#             html.Br()
+#         ]),
+#         dbc.Button('Show Chart', id='button_trend', color='warning', style={'margin-bottom': '1em'},
+#                    block=True),
+#         dbc.Row([
+#             dbc.Col(dcc.Graph(id='viz3')),
+#         ]),
+#     ]),
+#     dbc.Row([
+#         html.H3(children='Correlation'),
+#     ],
+#         # justify="center",
+#         style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
+#                "padding-left": "1%"}
+#     ),
+#     html.Div([
+#         dbc.FormGroup([
+#             # dbc.Label("Select city"),
+#             # dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
+#
+#             dbc.Label("Select Chart"),
+#             dcc.Dropdown(id="dropdown_chart_corr", value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
+#                                                                      {"label": "Pair Plot", "value": "pair"}]),
+#             dbc.Label("Select feature"),
+#             dcc.Dropdown(id="dropdown_feature_corr", value=2, options=fetch_numeric_columns(), multi=True),
+#             html.Br()
+#         ]),
+#         dbc.Button('Show Chart', id='button_corr', color='warning', style={'margin-bottom': '1em'},
+#                    block=True),
+#         dbc.Row([
+#             dbc.Col(dcc.Graph(id='viz4')),
+#         ]),
+#     ]),
+#
+# ], style={"background-color": "#ffffff"})
 
-# Setting Web Layout
-page = dbc.Container([
-    # dbc.Row([
-    #     html.H1(children='Australian Rainfall - Visualization Dashboard'),
-    # ],
-    #     justify="center",
-    #     style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
-    # ),
-    html.Div([
-        dbc.FormGroup([
-            dbc.Label("Select Year"),
-            dcc.Dropdown(id="dropdown_years", value=1, options=fetch_years()),
-            dbc.Label("Select feature"),
-            dcc.Dropdown(id="dropdown_feature", value=2, options=fetch_numeric_columns()),
-            html.Br()
-        ]),
-        dbc.Button('Show Map', id='button_map', color='success', style={'margin-bottom': '1em'},
-                   block=True),
-        dbc.Row([
-            dbc.Col(dcc.Graph(id='viz1')),
-        ]),
-    ], style={"margin-top":"2px"}),
-    dbc.Row([
-            html.H3(children='Demogrphic Visualization'),
-        ],
-            # justify="center",
-            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
-        ),
-    html.Div([
-            dbc.FormGroup([
-                dbc.Label("Select Year"),
-                dcc.Dropdown(id="dropdown_years_chart", value=1, options=fetch_years()),
-
-                dbc.Label("Select Chart"),
-                dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
-                                                               {"label": "line Chart", "value": "line"},
-                                                                    {"label": "Bar-Line", "value": "bar-line"}]),
-                dbc.Label("Select feature"),
-                dcc.Dropdown(id="dropdown_feature_chart", value=3, options=fetch_numeric_columns()),
-                html.Br()
-            ]),
-            dbc.Button('Show Chart', id='button_chart', color='warning', style={'margin-bottom': '1em'},
-                       block=True),
-            dbc.Row([
-                dbc.Col(dcc.Graph(id='viz2')),
-            ]),
-        ]),
-    dbc.Row([
-            html.H3(children='Trend'),
-        ],
-            # justify="center",
-            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
-        ),
-    html.Div([
-            dbc.FormGroup([
-                dbc.Label("Select city"),
-                dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
-
-                # dbc.Label("Select Chart"),
-                # dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
-                #                                                {"label": "line Chart", "value": "line"}]),
-                dbc.Label("Select feature"),
-                dcc.Dropdown(id="dropdown_feature_trend", value=2, options=fetch_numeric_columns()),
-                html.Br()
-            ]),
-            dbc.Button('Show Chart', id='button_trend', color='warning', style={'margin-bottom': '1em'},
-                       block=True),
-            dbc.Row([
-                dbc.Col(dcc.Graph(id='viz3')),
-            ]),
-        ]),
-    dbc.Row([
-            html.H3(children='Correlation'),
-        ],
-            # justify="center",
-            style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
-        ),
-    html.Div([
-            dbc.FormGroup([
-                # dbc.Label("Select city"),
-                # dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
-
-                dbc.Label("Select Chart"),
-                dcc.Dropdown(id="dropdown_chart_corr", value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
-                                                               {"label": "Pair Plot", "value": "pair"}]),
-                dbc.Label("Select feature"),
-                dcc.Dropdown(id="dropdown_feature_corr", value=2, options=fetch_numeric_columns(), multi=True),
-                html.Br()
-            ]),
-            dbc.Button('Show Chart', id='button_corr', color='warning', style={'margin-bottom': '1em'},
-                       block=True),
-            dbc.Row([
-                dbc.Col(dcc.Graph(id='viz4')),
-            ]),
-        ]),
-
-],style={"background-color":"#ffffff"})
 
 def cat_to_var(var, lst):
     inputs = []
@@ -693,6 +631,7 @@ def cat_to_var(var, lst):
         else:
             inputs.append(0.0)
     return inputs
+
 
 @app.callback(
     dash.dependencies.Output('prediction', 'children'),
@@ -721,7 +660,8 @@ def cat_to_var(var, lst):
      ]
 )
 def predictRainfall(n_clicks, city, minTemp, maxTemp, rainfall, evaporation, sunshine, windGustDir, windGustSpeed,
-                    windDir9am, windDir3pm, windSpeed9am, windSpeed3pm, humidity9am, humidity3pm, pressure9am, pressure3pm,
+                    windDir9am, windDir3pm, windSpeed9am, windSpeed3pm, humidity9am, humidity3pm, pressure9am,
+                    pressure3pm,
                     cloud9am, cloud3pm, temp9am, temp3pm, rainToday):
     if n_clicks:
         inputs = []
@@ -750,16 +690,16 @@ def predictRainfall(n_clicks, city, minTemp, maxTemp, rainfall, evaporation, sun
             inputs.append(1)
 
         city_lst = ['AliceSprings', 'Brisbane', 'Cairns', 'Canberra', 'Cobar',
-           'CoffsHarbour', 'Darwin', 'Hobart', 'Melbourne',
-           'MelbourneAirport', 'Mildura', 'Moree', 'MountGambier',
-           'NorfolkIsland', 'Nuriootpa', 'Perth', 'PerthAirport', 'Portland',
-           'Sale', 'Sydney', 'SydneyAirport', 'Townsville', 'WaggaWagga',
-           'Watsonia', 'Williamtown', 'Woomera']
+                    'CoffsHarbour', 'Darwin', 'Hobart', 'Melbourne',
+                    'MelbourneAirport', 'Mildura', 'Moree', 'MountGambier',
+                    'NorfolkIsland', 'Nuriootpa', 'Perth', 'PerthAirport', 'Portland',
+                    'Sale', 'Sydney', 'SydneyAirport', 'Townsville', 'WaggaWagga',
+                    'Watsonia', 'Williamtown', 'Woomera']
 
         inputs.extend(cat_to_var(city, city_lst))
 
         wind_direction_lst = ['E', 'ENE', 'ESE', 'N', 'NE', 'NNE', 'NNW', 'NW', 'S', 'SE', 'SSE',
-           'SSW', 'SW', 'W', 'WNW', 'WSW']
+                              'SSW', 'SW', 'W', 'WNW', 'WSW']
 
         inputs.extend(cat_to_var(windGustDir, wind_direction_lst))
         inputs.extend(cat_to_var(windDir9am, wind_direction_lst))
@@ -768,26 +708,22 @@ def predictRainfall(n_clicks, city, minTemp, maxTemp, rainfall, evaporation, sun
         data = [inputs]
         data = scaler.transform(data)
         result = model.predict(data)[0]
-        print(result)
         if result == 0:
             return html.Div([
                 html.H3('Its going to be sunny. Enjoy your day!!! :)'),
-                html.Img(src=app.get_asset_url('sun.png'), style={"width": "300px", "height": "300px", 'position': 'relative', 'left': '100px'})
+                html.Img(src=app.get_asset_url('sun.png'),
+                         style={"width": "300px", "height": "300px", 'position': 'relative', 'left': '100px'})
             ], style={'position': 'relative', 'left': '300px'})
         else:
             return html.Div([
                 html.H3('Its going to rain. Please carry your umbrella with you!!! :)'),
-                html.Img(src=app.get_asset_url('rainfall.jpg'), style={"width": "300px", "height": "300px", 'position': 'relative', 'left': '100px'})
+                html.Img(src=app.get_asset_url('rainfall.jpg'),
+                         style={"width": "300px", "height": "300px", 'position': 'relative', 'left': '100px'})
             ], style={'position': 'relative', 'left': '300px'})
 
     return {}
 
 
-
-
-
-
-# Update the index
 @app.callback(dash.dependencies.Output('page-content', 'children'),
               [dash.dependencies.Input('url', 'pathname')])
 def display_page(pathname):
@@ -801,8 +737,6 @@ def display_page(pathname):
         return page3
     else:
         return index_page
-    # You could also return a 404 "URL not found" page here
-
 
 
 @app.callback(
@@ -816,29 +750,24 @@ def update_vis1(n_clicks, year, feature):
     if n_clicks:
         df_map = df[df['year'].isin(year)]
         fig = None
-        # print(df_map)
         df_map = df_map.groupby('Location', as_index=False)[feature].mean()
-        df_map = pd.merge(df_map, aus_cities,on='Location', how='left')
-        # print(df_map)
-
+        df_map = pd.merge(df_map, aus_cities, on='Location', how='left')
         fig = px.scatter_geo(df_map,
-                             # locations="Location",
                              lat=df_map.lat,
                              lon=df_map.lng,
                              projection="natural earth",
                              locationmode="country names",
                              size=df_map[feature],
-                             hover_data={'lat':False,'lng':False},
+                             hover_data={'lat': False, 'lng': False},
                              color=df_map.Location
                              )
         fig.update_layout(
             title='Rainfall in Australia',
-            # geo_scope='world',
             geo=dict(
                 projection_scale=0.15,  # this is kind of like zoom
                 center=dict(lat=-25, lon=135),  # this will center on the point
-                lataxis=dict(range=[-28,-22]),
-                lonaxis = dict(range=[130,140])
+                lataxis=dict(range=[-28, -22]),
+                lonaxis=dict(range=[130, 140])
             )
         )
         return fig
@@ -853,22 +782,18 @@ def update_vis1(n_clicks, year, feature):
      State('dropdown_feature_3', 'value'),
      ]
 )
-def update_vis_3_1(n_clicks, year,cities, feature):
+def update_vis_3_1(n_clicks, year, cities, feature):
     if n_clicks:
         fig = None
-
         df_autoplay = df[df['Location'].isin(cities)]
         df_autoplay = df_autoplay[df_autoplay['year'] == year]
         df_autoplay = df_autoplay.groupby(['Location', 'RainTomorrow'], as_index=False)[feature].mean()
 
-        fig = px.bar(df_autoplay, x='Location', y=feature, color='RainTomorrow' , barmode="group")
+        fig = px.bar(df_autoplay, x='Location', y=feature, color='RainTomorrow', barmode="group")
 
         return fig
 
     return {}
-
-
-
 
 
 @app.callback(
@@ -886,7 +811,7 @@ def update_vis2(n_clicks, year, chart, feature):
         df_year = df_year.groupby('Location', as_index=False)[feature].mean()
         if chart == 'bar':
             fig = px.bar(df_year, 'Location', feature)
-        elif chart =='line':
+        elif chart == 'line':
             fig = px.line(df_year, 'Location', feature)
         elif chart == 'bar-line':
             # Creating Bar Chart
@@ -899,6 +824,7 @@ def update_vis2(n_clicks, year, chart, feature):
         return fig
 
     return {}
+
 
 @app.callback(
     dash.dependencies.Output('viz3', 'figure'),
@@ -919,30 +845,30 @@ def update_vis3(n_clicks, city, feature):
 
     return {}
 
+
 @app.callback(
     dash.dependencies.Output('viz4', 'figure'),
     [Input('button_corr', 'n_clicks')],
     [
-     State('dropdown_chart_corr', 'value'),
-    State('dropdown_feature_corr', 'value'),
-     ]
+        State('dropdown_chart_corr', 'value'),
+        State('dropdown_feature_corr', 'value'),
+    ]
 )
 def update_vis4(n_clicks, chart, feature):
     if n_clicks:
         fig = None
-        # feature = fetch_numeric_columns()
         df_corr = df[feature]
         df_pair = df_corr.copy()
         df_pair['RainTomorrow'] = df['RainTomorrow']
-        # print(df_pair)
         if chart == 'heat-map':
             fig = px.imshow(df_corr.corr())
 
-        elif chart =='pair':
+        elif chart == 'pair':
             fig = px.scatter_matrix(df_pair, dimensions=feature, color="RainTomorrow")
         return fig
 
     return {}
+
 
 @app.callback(
     dash.dependencies.Output('viz_location', 'figure'),
@@ -957,10 +883,8 @@ def update_vis5(n_clicks, city, feature, year_range):
         fig = None
         df_location = df[df['Location'].isin(city)]
         years = []
-        for i in range(year_range[0], year_range[1]+1):
-            # print(i)
+        for i in range(year_range[0], year_range[1] + 1):
             years.append(i)
-        # print((years))
         df_location = df_location[df_location['year'].isin(years)]
 
         df_location['year'] = df_location['year'].apply(str)
@@ -974,6 +898,7 @@ def update_vis5(n_clicks, city, feature, year_range):
 
     return {}
 
+
 @app.callback(
     dash.dependencies.Output('viz_directions', 'figure'),
     [Input('button_location', 'n_clicks')],
@@ -986,23 +911,17 @@ def update_vis6(n_clicks, cities, feature, year_range):
     if n_clicks:
         fig = None
         df_location = df[df['Location'].isin(cities)]
-        # print(year_range)
         years = []
-        for i in range(year_range[0], year_range[1]+1):
-            # print(i)
+        for i in range(year_range[0], year_range[1] + 1):
             years.append(i)
         df_location = df_location[df_location['year'].isin(years)]
         df_location['year'] = df_location['year'].apply(str)
         df_location['year'] = df_location['year'].str[:-2]
         cities_len = len(cities)
-        cities_iter = (cities_len//2 + 1) if (cities_len%2 > 0) else (cities_len//2)
+        cities_iter = (cities_len // 2 + 1) if (cities_len % 2 > 0) else (cities_len // 2)
         specs = []
-        for i in range(0,cities_iter):
-            specs.append([{'type':'domain'}, {'type':'domain'}])
-        # print("Specifications")
-        # print(specs)
-        # specs=[[{'type':'domain'}, {'type':'domain'}], [{'type':'domain'}, {'type':'domain'}]]
-        # df_location = df_location.groupby(['Location', 'year'], as_index=False)[feature].mean()
+        for i in range(0, cities_iter):
+            specs.append([{'type': 'domain'}, {'type': 'domain'}])
         fig = make_subplots(rows=cities_iter, cols=2, specs=specs)
 
         row = 1
@@ -1011,7 +930,8 @@ def update_vis6(n_clicks, cities, feature, year_range):
             df_city = df_location[df_location['Location'] == city]
             yes_count = len(df_city[df_location['RainTomorrow'] == 'Yes'].index)
             no_count = len(df_city[df_location['RainTomorrow'] == 'No'].index)
-            fig.add_trace(go.Pie(labels=df_location['RainTomorrow'].unique(), values=[no_count,yes_count],name=city),row, col)
+            fig.add_trace(go.Pie(labels=df_location['RainTomorrow'].unique(), values=[no_count, yes_count], name=city),
+                          row, col)
             if (col % 2) == 0:
                 row = row + 1
                 col = 1
@@ -1020,16 +940,11 @@ def update_vis6(n_clicks, cities, feature, year_range):
         fig.update_traces(hole=.4)
         fig.update_layout(
             title_text="City wise rainfall percentage"
-            # annotations=[dict(text='AliceSprings', x=0.06, y=.8, font_size=10, showarrow=False),
-            #              dict(text='Melbourne', x=0.7, y=0.8, font_size=10, showarrow=False),
-            #              dict(text='Sydney', x=0.06, y=.187, font_size=10, showarrow=False),
-            #              dict(text='Canberra', x=0.7, y=.187, font_size=10, showarrow=False)]
-            )
+        )
         return fig
 
     return {}
 
 
 if __name__ == "__main__":
-    # app = dash_task()
     app.run_server(debug=True)

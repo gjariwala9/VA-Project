@@ -5,13 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6a39a38-b22a-4dfb-8806-f2ca8b920904" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/VA-Project.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/weatherAUS_csv.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VA Project.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/VA_Project.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/VA_Project.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/rain_graphic.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/p.py" beforeDir="false" afterPath="$PROJECT_DIR$/p.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/va_project.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/weatherAUS.csv.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +84,7 @@
       <workItem from="1638655455250" duration="152000" />
       <workItem from="1638655613436" duration="87000" />
       <workItem from="1638655709010" duration="89000" />
-      <workItem from="1638655800974" duration="10288000" />
+      <workItem from="1638655800974" duration="12812000" />
     </task>
     <servers />
   </component>
@@ -91,6 +92,6 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/VA_Project$p.coverage" NAME="p Coverage Results" MODIFIED="1638666518924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/VA_Project$p.coverage" NAME="p Coverage Results" MODIFIED="1638673928533" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
