@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c6a39a38-b22a-4dfb-8806-f2ca8b920904" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/VA-Project.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/weatherAUS_csv.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p.py" beforeDir="false" afterPath="$PROJECT_DIR$/p.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="21nZRLe9neioMk7F4jbZucT02Fr" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="p" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Asus\anaconda3\envs\vaProject\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/p.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.p" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c6a39a38-b22a-4dfb-8806-f2ca8b920904" name="Changes" comment="" />
+      <created>1638578802745</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1638578802745</updated>
+      <workItem from="1638578805319" duration="6972000" />
+      <workItem from="1638633991956" duration="9464000" />
+      <workItem from="1638655455250" duration="152000" />
+      <workItem from="1638655613436" duration="87000" />
+      <workItem from="1638655709010" duration="89000" />
+      <workItem from="1638655800974" duration="10288000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/VA_Project$p.coverage" NAME="p Coverage Results" MODIFIED="1638666518924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

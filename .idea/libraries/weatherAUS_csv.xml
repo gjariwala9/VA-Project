@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="weatherAUS.csv">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/weatherAUS.csv.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

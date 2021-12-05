@@ -13,16 +13,26 @@ import plotly.express as px
 from dash.dependencies import Output, Input, State
 from matplotlib.widgets import Button, Slider
 import dash_core_components as dcc
+# from dash import dcc
 import dash_html_components as html
+# from dash import html
 import dash_bootstrap_components as dbc
+# from dash import dbc
 from project import *
 
-import datetime
-import sqlite3
-import webbrowser
-from time import sleep
+# import datetime
+# import sqlite3
+# import webbrowser
+# from time import sleep
 
 from flask import Response
+import pickle
+import joblib
+# from xgboost import XGBClassifier
+
+model = joblib.load('finalModel.joblib')
+scaler = pickle.load(open('scaler.pkl', 'rb'))
+le = pickle.load(open('labelEncoder.pkl', 'rb'))
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Rainfall Prediction in Australia"
@@ -175,6 +185,15 @@ def fetch_numeric_columns():
         num_cols.append({"label": col, "value": col})
     return num_cols
 
+def fetch_directions():
+    lst = df['WindDir9am'].unique()
+    lst = lst.tolist()
+    lst.sort()
+    directions = []
+    for direction in lst:
+        directions.append({"label": direction, "value": direction})
+    return directions
+
 def fetch_cities():
     lst = df['Location'].unique()
     lst = lst.tolist()
@@ -183,6 +202,9 @@ def fetch_cities():
     for city in lst:
         cities.append({"label": city, "value": city})
     return cities
+
+
+
 def get_layout_for_tab1():
     layout = html.Div([
         dbc.Row([
@@ -257,11 +279,10 @@ def get_layout_for_tab3():
                 # dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
 
                 dbc.Label("Select Chart"),
-                dcc.RadioItems(id="dropdown_chart_corr",value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
-                                                                         {"label": "Pair Plot", "value": "pair"}],
+                dcc.RadioItems(id="dropdown_chart_corr",value='pair', options=[
+                                                                         {"label": "Pair Plot", "value": "pair"},
+                    {"label": "Heat-Map", "value": "heat-map"},],
                                labelStyle={'display': 'inline-block','padding-right':'15px'}),
-                # dcc.Dropdown(id="dropdown_chart_corr", value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
-                #                                                          {"label": "Pair Plot", "value": "pair"}]),
                 dbc.Label("Select feature"),
                 dcc.Dropdown(id="dropdown_feature_corr", value=2, options=fetch_numeric_columns(), multi=True),
                 html.Br()
@@ -371,6 +392,91 @@ page3 = dbc.Container([
     ]),
 ],style={"background-color": "#ffffff"})
 
+rainTomorrowPrediction = ""
+
+page4 = dbc.Container([
+    dbc.Row([
+        html.H3(children='Rainfall Prediction'),
+    ],
+        # justify="center",
+        style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000", "padding-left": "1%"}
+    ),
+    html.Div([
+        dbc.FormGroup([
+            dbc.Label("Select City"),
+            dcc.Dropdown(id="dropdown_city_4", value='Cobar', options=fetch_cities()),
+
+            dbc.Label("Enter Minimum Temperature"),
+            dbc.Input(id="minTemp", type="number", min=-50, max=50, step=0.1, value=17.9),
+
+            dbc.Label("Enter Maximum Temperature"),
+            dbc.Input(id="maxTemp",type="number", min=-50, max=50, step=0.1, value=35.2),
+
+            dbc.Label("Enter Rainfall in cm"),
+            dbc.Input(id="rain",type="number", min=0, max=100, step=0.1, value=0.0),
+
+            dbc.Label("Enter Evaporation"),
+            dbc.Input(id="evaporation",type="number", min=0, max=100, step=0.1, value=12.0),
+
+            dbc.Label("Enter Sunshine"),
+            dbc.Input(id="sunshine",type="number", min=0, max=100, step=0.1, value=12.3),
+
+            dbc.Label("Select Wind Gust Direction"),
+            dcc.Dropdown(id="windGustDir", value='SSW', options=fetch_directions()),
+
+            dbc.Label("Enter WindGustSpeed"),
+            dbc.Input(id="windGustSpeed",type="number", min=0, max=100, step=0.1, value=48.0),
+
+            dbc.Label("Select Wind Direction at 9AM"),
+            dcc.Dropdown(id="windDir9am", value='ENE', options=fetch_directions()),
+
+            dbc.Label("Select Wind Direction at 3PM"),
+            dcc.Dropdown(id="windDir3pm", value='SW', options=fetch_directions()),
+
+            dbc.Label("Enter Wind Speed at 9AM"),
+            dbc.Input(id="windSpeed9am",type="number", min=0, max=100, step=0.1, value=6.0),
+
+            dbc.Label("Enter Wind Speed at 3PM"),
+            dbc.Input(id="windSpeed3pm",type="number", min=0, max=100, step=0.1, value=20.0),
+
+            dbc.Label("Enter Humidity at 9AM"),
+            dbc.Input(id="humidity9am",type="number", min=0, max=100, step=0.1, value=20.0),
+
+            dbc.Label("Enter Humidity at 3PM"),
+            dbc.Input(id="humidity3pm",type="number", min=0, max=100, step=0.1, value=13.0),
+
+            dbc.Label("Enter Pressure at 9AM"),
+            dbc.Input(id="pressure9am", type="number", min=0, max=10000, step=0.1, value=1006.3),
+
+            dbc.Label("Enter Pressure at 3PM"),
+            dbc.Input(id="pressure3pm",type="number", min=0, max=10000, step=0.1, value=1004.4),
+
+            dbc.Label("Enter Cloud at 9AM"),
+            dbc.Input(id="cloud9am",type="number", min=0, max=100, step=0.1, value=2.0),
+
+            dbc.Label("Enter CLoud at 3PM"),
+            dbc.Input(id="cloud3pm",type="number", min=0, max=100, step=0.1, value=5.0),
+
+            dbc.Label("Enter Temperature at 9AM"),
+            dbc.Input(id="temp9am",type="number", min=0, max=100, step=0.1, value=26.6),
+
+            dbc.Label("Enter Temperature at 3PM"),
+            dbc.Input(id="temp3pm",type="number", min=0, max=100, step=0.1, value=33.4),
+
+            dbc.Label("Did it rain today?"),
+            dcc.Dropdown(id="rainToday", value='No', options=[{'label': 'Yes', 'value': 'Yes'},
+                                                           {'label': 'No', 'value': 'No'}]),
+
+
+            html.Br()
+        ]),
+        dbc.Button('Predict', id='predictBtn', color='warning', style={'margin-bottom': '1em'},
+                   block=True),
+
+        html.Div(id='prediction'),
+    ]),
+],style={"background-color": "#ffffff"})
+
 error_page = dbc.Container([
     html.Div([
         dbc.Row([
@@ -386,6 +492,7 @@ error_page = dbc.Container([
         ])
     ])
 ],style={"height":"100vh"})
+
 page2 = dbc.Container([
     html.Div([
         dbc.Row([
@@ -578,6 +685,108 @@ page = dbc.Container([
 
 ],style={"background-color":"#ffffff"})
 
+def cat_to_var(var, lst):
+    inputs = []
+    for i in lst:
+        if i == var:
+            inputs.append(1.0)
+        else:
+            inputs.append(0.0)
+    return inputs
+
+@app.callback(
+    dash.dependencies.Output('prediction', 'children'),
+    [Input('predictBtn', 'n_clicks')],
+    [State('dropdown_city_4', 'value'),
+     State('minTemp', 'value'),
+     State('maxTemp', 'value'),
+     State('rain', 'value'),
+     State('evaporation', 'value'),
+     State('sunshine', 'value'),
+     State('windGustDir', 'value'),
+     State('windGustSpeed', 'value'),
+     State('windDir9am', 'value'),
+     State('windDir3pm', 'value'),
+     State('windSpeed9am', 'value'),
+     State('windSpeed3pm', 'value'),
+     State('humidity9am', 'value'),
+     State('humidity3pm', 'value'),
+     State('pressure9am', 'value'),
+     State('pressure3pm', 'value'),
+     State('cloud9am', 'value'),
+     State('cloud3pm', 'value'),
+     State('temp9am', 'value'),
+     State('temp3pm', 'value'),
+     State('rainToday', 'value'),
+     ]
+)
+def predictRainfall(n_clicks, city, minTemp, maxTemp, rainfall, evaporation, sunshine, windGustDir, windGustSpeed,
+                    windDir9am, windDir3pm, windSpeed9am, windSpeed3pm, humidity9am, humidity3pm, pressure9am, pressure3pm,
+                    cloud9am, cloud3pm, temp9am, temp3pm, rainToday):
+    if n_clicks:
+        inputs = []
+        inputs.append(minTemp)
+        inputs.append(maxTemp)
+        inputs.append(rainfall)
+        inputs.append(evaporation)
+        inputs.append(sunshine)
+        inputs.append(windGustSpeed)
+        inputs.append(windSpeed9am)
+        inputs.append(windSpeed3pm)
+        inputs.append(humidity9am)
+        inputs.append(humidity3pm)
+        inputs.append(pressure9am)
+        inputs.append(pressure3pm)
+        inputs.append(cloud9am)
+        inputs.append(cloud3pm)
+        inputs.append(temp9am)
+        inputs.append(temp3pm)
+
+        if rainToday == 'No':
+            inputs.append(1)
+            inputs.append(0)
+        else:
+            inputs.append(0)
+            inputs.append(1)
+
+        city_lst = ['AliceSprings', 'Brisbane', 'Cairns', 'Canberra', 'Cobar',
+           'CoffsHarbour', 'Darwin', 'Hobart', 'Melbourne',
+           'MelbourneAirport', 'Mildura', 'Moree', 'MountGambier',
+           'NorfolkIsland', 'Nuriootpa', 'Perth', 'PerthAirport', 'Portland',
+           'Sale', 'Sydney', 'SydneyAirport', 'Townsville', 'WaggaWagga',
+           'Watsonia', 'Williamtown', 'Woomera']
+
+        inputs.extend(cat_to_var(city, city_lst))
+
+        wind_direction_lst = ['E', 'ENE', 'ESE', 'N', 'NE', 'NNE', 'NNW', 'NW', 'S', 'SE', 'SSE',
+           'SSW', 'SW', 'W', 'WNW', 'WSW']
+
+        inputs.extend(cat_to_var(windGustDir, wind_direction_lst))
+        inputs.extend(cat_to_var(windDir9am, wind_direction_lst))
+        inputs.extend(cat_to_var(windDir3pm, wind_direction_lst))
+
+        data = [inputs]
+        data = scaler.transform(data)
+        result = model.predict(data)[0]
+        print(result)
+        if result == 0:
+            return html.Div([
+                html.H3('Its going to be sunny. Enjoy your day!!! :)'),
+                html.Img(src=app.get_asset_url('sun.png'), style={"width": "300px", "height": "300px", 'position': 'relative', 'left': '100px'})
+            ], style={'position': 'relative', 'left': '300px'})
+        else:
+            return html.Div([
+                html.H3('Its going to rain. Please carry your umbrella with you!!! :)'),
+                html.Img(src=app.get_asset_url('rainfall.jpg'), style={"width": "300px", "height": "300px", 'position': 'relative', 'left': '100px'})
+            ], style={'position': 'relative', 'left': '300px'})
+
+    return {}
+
+
+
+
+
+
 # Update the index
 @app.callback(dash.dependencies.Output('page-content', 'children'),
               [dash.dependencies.Input('url', 'pathname')])
@@ -587,7 +796,7 @@ def display_page(pathname):
     elif pathname == '/location':
         return page2
     elif pathname == '/rainfall-predict':
-        return error_page
+        return page4
     elif pathname == '/rainfall-visualization':
         return page3
     else:
