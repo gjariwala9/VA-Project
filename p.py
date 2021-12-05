@@ -1,3 +1,4 @@
+# Importing the required libaries
 import base64
 import dash
 import dash_bootstrap_components as dbc
@@ -20,19 +21,22 @@ from plotly.subplots import make_subplots
 from custom_function import *
 from typing import Tuple
 
+# Loading the model instances saved from the notebook for further use in prediction module
 model = joblib.load('finalModel.joblib')
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 le = pickle.load(open('labelEncoder.pkl', 'rb'))
 
+# Creating a Dash application
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Rainfall Prediction in Australia"
 app.config.suppress_callback_exceptions = True
 
+# Reading the datasets required
 df = pd.read_csv('dataset/weatherAUS-processed.csv')
 aus_cities = pd.read_csv('dataset/au_cities.csv')
 df = pd.merge(df, aus_cities, on='Location', how='left')
 
-
+# Creating the main application page
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dbc.Row([
@@ -48,9 +52,11 @@ app.layout = html.Div([
         "padding-top": "50px"})
 ])
 
+# UI layout for Index page which gets loaded when the application runs
 index_page = dbc.Container([
     html.Title("Australian Rainfall Prediction"),
     dbc.Row([
+        # UI layout for "Rainfall history" card
         dbc.Col(
             dbc.Card(
                 [
@@ -71,6 +77,7 @@ index_page = dbc.Container([
                 style={"width": "18rem", "height": "23rem", "background-color": "#000000", "color": "#ffffff"},
             ),
         ),
+        # UI layout for "Location" card
         dbc.Col(
             dbc.Card(
                 [
@@ -94,6 +101,7 @@ index_page = dbc.Container([
 
     dbc.Row([
         dbc.Col(
+            # UI layout for "Rainfall Visualization" card
             dbc.Card(
                 [
                     dbc.CardImg(src=app.get_asset_url('visualization.jpg'), top=True),
@@ -112,6 +120,7 @@ index_page = dbc.Container([
                 style={"width": "18rem", "background-color": "#000000", "color": "#ffffff"},
             ),
         ),
+        # UI layout for "Rainfall Prediction module" card
         dbc.Col(
             dbc.Card(
                 [
@@ -140,6 +149,8 @@ index_page = dbc.Container([
 )
 
 
+# function to fetch unique 'years' from the dataset
+# This is to be used for sliders, dropdowns, data-filtering, etc.
 def fetch_years():
     lst = df['year'].unique()
     lst = lst.tolist()
@@ -149,7 +160,7 @@ def fetch_years():
         years.append({"label": year, "value": year})
     return years
 
-
+# Function to retrieve numeric columns from the dataset
 def fetch_numeric_columns():
     num_cols = []
     numeric_cols = get_numeric_columns(df)
@@ -160,6 +171,8 @@ def fetch_numeric_columns():
     return num_cols
 
 
+# function to retrieve unique values for Wind Direction
+# This is to be used for sliders, dropdowns, data-filtering, etc.
 def fetch_directions():
     lst = df['WindDir9am'].unique()
     lst = lst.tolist()
@@ -169,7 +182,8 @@ def fetch_directions():
         directions.append({"label": direction, "value": direction})
     return directions
 
-
+# function to retrieve unique cities from the dataset
+# This is to be used for sliders, dropdowns, data-filtering, etc.
 def fetch_cities():
     lst = df['Location'].unique()
     lst = lst.tolist()
@@ -179,7 +193,8 @@ def fetch_cities():
         cities.append({"label": city, "value": city})
     return cities
 
-
+# UI layout for the first  tab "Demorgraphic Visualization" in the first page "Rainfall history" that opens up on
+# the first card
 def get_layout_for_tab1():
     layout = html.Div([
         dbc.Row([
@@ -210,7 +225,8 @@ def get_layout_for_tab1():
     ])
     return layout
 
-
+# UI layout for the first  tab "Rainfall History Trend" in the first page "Rainfall history" that opens up on
+# the first card
 def get_layout_for_tab2():
     layout = html.Div([
         dbc.Row([
@@ -237,7 +253,8 @@ def get_layout_for_tab2():
 
     return layout
 
-
+# UI layout for the first  tab "Correlation Analysis" in the first page "Rainfall history" that opens up on
+# the first card
 def get_layout_for_tab3():
     layout = html.Div([
         dbc.Row([
@@ -268,7 +285,7 @@ def get_layout_for_tab3():
 
     return layout
 
-
+# UI layout for "Rainfall history" page which gets opened up when clicked on the "Rainfall history" card
 page1 = dbc.Container([
     dcc.Tabs([
         dcc.Tab(label='Demographic Visualization', children=[
@@ -283,6 +300,7 @@ page1 = dbc.Container([
     ], style={'font-style': 'italic', 'color': 'red', 'background-color': 'black'})
 ], style={"background-color": "#ffffff"})
 
+# UI layout for "Rainfall Visualziation" page which gets opened up when clicked on the 3rd card "Rainfall Visualziation" card
 page3 = dbc.Container([
     dbc.Row([
         html.H3(children='Rainfall Visualization'),
@@ -328,6 +346,7 @@ page3 = dbc.Container([
     ]),
 ], style={"background-color": "#ffffff"})
 
+# Implementation "Rainfall Prediction" page which gets opened up when clicked on the 4th card "Rainfall Prediction" card
 page4 = dbc.Container([
     dbc.Row([
         html.H3(children='Rainfall Prediction'),
@@ -410,6 +429,7 @@ page4 = dbc.Container([
     ]),
 ], style={"background-color": "#ffffff"})
 
+# UI layout for Error page which gets opened up when error occurs
 error_page = dbc.Container([
     html.Div([
         dbc.Row([
@@ -427,6 +447,7 @@ error_page = dbc.Container([
     ])
 ], style={"height": "100vh"})
 
+# Implementation with UI layout for "Rainfall: At your Destination" page which gets opened up when clicked on the 3rd card "Rainfall Location" card
 page2 = dbc.Container([
     html.Div([
         dbc.Row([
@@ -511,118 +532,11 @@ page2 = dbc.Container([
                 dbc.Col(dcc.Graph(id='viz_choropleth')),
             ])
         ]),
-        # dbc.Row([
-        #     dbc.Col(dcc.Graph(id='viz_location')),
-        # ]),
-        # dbc.Row([
-        #     dbc.Col(dcc.Graph(id='viz_directions')),
-        # ]),
     ]),
 
 ], style={"background-color": "#ffffff"})
-#
-# # Setting Web Layout
-# page = dbc.Container([
-#     # dbc.Row([
-#     #     html.H1(children='Australian Rainfall - Visualization Dashboard'),
-#     # ],
-#     #     justify="center",
-#     #     style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000"}
-#     # ),
-#     html.Div([
-#         dbc.FormGroup([
-#             dbc.Label("Select Year"),
-#             dcc.Dropdown(id="dropdown_years", value=1, options=fetch_years()),
-#             dbc.Label("Select feature"),
-#             dcc.Dropdown(id="dropdown_feature", value=2, options=fetch_numeric_columns()),
-#             html.Br()
-#         ]),
-#         dbc.Button('Show Map', id='button_map', color='success', style={'margin-bottom': '1em'},
-#                    block=True),
-#         dbc.Row([
-#             dbc.Col(dcc.Graph(id='viz1')),
-#         ]),
-#     ], style={"margin-top": "2px"}),
-#     dbc.Row([
-#         html.H3(children='Demogrphic Visualization'),
-#     ],
-#         # justify="center",
-#         style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
-#                "padding-left": "1%"}
-#     ),
-#     html.Div([
-#         dbc.FormGroup([
-#             dbc.Label("Select Year"),
-#             dcc.Dropdown(id="dropdown_years_chart", value=1, options=fetch_years()),
-#
-#             dbc.Label("Select Chart"),
-#             dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
-#                                                                 {"label": "line Chart", "value": "line"},
-#                                                                 {"label": "Bar-Line", "value": "bar-line"}]),
-#             dbc.Label("Select feature"),
-#             dcc.Dropdown(id="dropdown_feature_chart", value=3, options=fetch_numeric_columns()),
-#             html.Br()
-#         ]),
-#         dbc.Button('Show Chart', id='button_chart', color='warning', style={'margin-bottom': '1em'},
-#                    block=True),
-#         dbc.Row([
-#             dbc.Col(dcc.Graph(id='viz2')),
-#         ]),
-#     ]),
-#     dbc.Row([
-#         html.H3(children='Trend'),
-#     ],
-#         # justify="center",
-#         style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
-#                "padding-left": "1%"}
-#     ),
-#     html.Div([
-#         dbc.FormGroup([
-#             dbc.Label("Select city"),
-#             dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
-#
-#             # dbc.Label("Select Chart"),
-#             # dcc.Dropdown(id="dropdown_chart", value=2, options=[{"label": "Bar Chart", "value": "bar"},
-#             #                                                {"label": "line Chart", "value": "line"}]),
-#             dbc.Label("Select feature"),
-#             dcc.Dropdown(id="dropdown_feature_trend", value=2, options=fetch_numeric_columns()),
-#             html.Br()
-#         ]),
-#         dbc.Button('Show Chart', id='button_trend', color='warning', style={'margin-bottom': '1em'},
-#                    block=True),
-#         dbc.Row([
-#             dbc.Col(dcc.Graph(id='viz3')),
-#         ]),
-#     ]),
-#     dbc.Row([
-#         html.H3(children='Correlation'),
-#     ],
-#         # justify="center",
-#         style={"margin-top": "50px", "margin-bottom": "20px", "color": "#ffffff", "background-color": "#000000",
-#                "padding-left": "1%"}
-#     ),
-#     html.Div([
-#         dbc.FormGroup([
-#             # dbc.Label("Select city"),
-#             # dcc.Dropdown(id="dropdown_cities", value=1, options=fetch_cities()),
-#
-#             dbc.Label("Select Chart"),
-#             dcc.Dropdown(id="dropdown_chart_corr", value=1, options=[{"label": "Heat-Map", "value": "heat-map"},
-#                                                                      {"label": "Pair Plot", "value": "pair"}]),
-#             dbc.Label("Select feature"),
-#             dcc.Dropdown(id="dropdown_feature_corr", value=2, options=fetch_numeric_columns(), multi=True),
-#             html.Br()
-#         ]),
-#         dbc.Button('Show Chart', id='button_corr', color='warning', style={'margin-bottom': '1em'},
-#                    block=True),
-#         dbc.Row([
-#             dbc.Col(dcc.Graph(id='viz4')),
-#         ]),
-#     ]),
-#
-# ], style={"background-color": "#ffffff"})
 
-
+# function to conver the categorical variable value to its relevant numeric representation
 def cat_to_var(var, lst):
     inputs = []
     for i in lst:
@@ -632,7 +546,7 @@ def cat_to_var(var, lst):
             inputs.append(0.0)
     return inputs
 
-
+# Callback function for generating the prediction based on the values added
 @app.callback(
     dash.dependencies.Output('prediction', 'children'),
     [Input('predictBtn', 'n_clicks')],
@@ -723,7 +637,7 @@ def predictRainfall(n_clicks, city, minTemp, maxTemp, rainfall, evaporation, sun
 
     return {}
 
-
+# Callback function to route to different pages based on the card selected
 @app.callback(dash.dependencies.Output('page-content', 'children'),
               [dash.dependencies.Input('url', 'pathname')])
 def display_page(pathname):
@@ -738,7 +652,7 @@ def display_page(pathname):
     else:
         return index_page
 
-
+# Callback function to generate the choropleth map in the "Holistic View" tab of 3rd card
 @app.callback(
     dash.dependencies.Output('viz_choropleth', 'figure'),
     [Input('button_ch', 'n_clicks')],
@@ -774,7 +688,8 @@ def update_vis1(n_clicks, year, feature):
 
     return {}
 
-
+# Callback function to generate the bar chart based on the value provided in the input in the 3rd tab
+# "Customized Visualization" tab
 @app.callback(
     dash.dependencies.Output('viz_slider_autoplay', 'figure'),
     [Input('button_3', 'n_clicks'), Input('auto_slider', 'value')],
@@ -795,7 +710,8 @@ def update_vis_3_1(n_clicks, year, cities, feature):
 
     return {}
 
-
+# Callback function to generate charts based on chart-type and inputs selected for the  "Demographic Visualization" on
+# "Rainfall history" page
 @app.callback(
     dash.dependencies.Output('viz2', 'figure'),
     [Input('button_chart', 'n_clicks')],
@@ -824,7 +740,8 @@ def update_vis2(n_clicks, year, chart, feature):
         return fig
 
     return {}
-
+# Callback function to generate line-trend chart based on inputs selected for the  "Trend Analysis" tab on
+# "Rainfall history" page
 
 @app.callback(
     dash.dependencies.Output('viz3', 'figure'),
@@ -845,6 +762,8 @@ def update_vis3(n_clicks, city, feature):
 
     return {}
 
+# Callback function to generate heat-map/ pair-plot based on chart-type and inputs selected for the
+# "Coorelation Analysis" on "Rainfall history" page
 
 @app.callback(
     dash.dependencies.Output('viz4', 'figure'),
@@ -869,7 +788,8 @@ def update_vis4(n_clicks, chart, feature):
 
     return {}
 
-
+# Callback function to generate line chart based on inputs selected on the
+# "Custom Visualization" tab on 3rd page ("Rainfall At you destination")
 @app.callback(
     dash.dependencies.Output('viz_location', 'figure'),
     [Input('button_location', 'n_clicks')],
@@ -898,7 +818,8 @@ def update_vis5(n_clicks, city, feature, year_range):
 
     return {}
 
-
+# Callback function to generate dynamic pie-charts based inputs selected for the  "Rainfall Distribution" tab on
+# "Custom Visualization" option provided on "Rainfall: At your destination " page
 @app.callback(
     dash.dependencies.Output('viz_directions', 'figure'),
     [Input('button_location', 'n_clicks')],
@@ -942,7 +863,6 @@ def update_vis6(n_clicks, cities, feature, year_range):
             title_text="City wise rainfall percentage"
         )
         return fig
-
     return {}
 
 
